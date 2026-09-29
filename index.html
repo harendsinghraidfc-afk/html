@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Chronicles — A Space Blog</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-2: #f4f6fb;
+      --accent: #6a3fe0;
+      --accent-2: #0aa2c0;
+      --text: #1b2033;
+      --muted: #5a6076;
+      --card: #ffffff;
+      --border: rgba(106, 63, 224, 0.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 10%, #eef1fb 0%, var(--bg) 55%);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle animated star dots (light theme friendly) */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, rgba(106,63,224,0.25), transparent),
+        radial-gradient(1px 1px at 90px 80px, rgba(10,162,192,0.25), transparent),
+        radial-gradient(2px 2px at 160px 120px, rgba(106,63,224,0.18), transparent),
+        radial-gradient(1px 1px at 250px 60px, rgba(10,162,192,0.2), transparent),
+        radial-gradient(1.5px 1.5px at 320px 180px, rgba(106,63,224,0.15), transparent);
+      background-repeat: repeat;
+      background-size: 400px 300px;
+      opacity: 0.6;
+      animation: drift 120s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes drift {
+      from { background-position: 0 0; }
+      to { background-position: 400px 300px; }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    header.hero {
+      text-align: center;
+      padding: 70px 20px 50px;
+    }
+    header.hero .badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 16px;
+      margin-bottom: 20px;
+    }
+    header.hero h1 {
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      line-height: 1.1;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+    header.hero p {
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+    }
+
+    /* Toolbar with the print button aligned to the right */
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin: 30px 0 50px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 26px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(41, 211, 255, 0.4); }
+    .btn:active { transform: translateY(0); }
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      box-shadow: none;
+      color: var(--text);
+    }
+
+    article.post {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 20px rgba(27, 32, 51, 0.06);
+    }
+    article.post .meta {
+      font-size: 0.85rem;
+      color: var(--accent-2);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    article.post h2 {
+      font-size: 1.7rem;
+      margin-bottom: 14px;
+      color: #12172b;
+    }
+    article.post h3 {
+      font-size: 1.25rem;
+      margin: 24px 0 10px;
+      color: var(--accent);
+    }
+    article.post p { color: var(--muted); margin-bottom: 14px; }
+    article.post strong { color: var(--text); }
+    article.post .fact {
+      border-left: 3px solid var(--accent);
+      padding: 8px 16px;
+      margin: 16px 0;
+      background: rgba(106, 63, 224, 0.06);
+      border-radius: 0 8px 8px 0;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ---- Print styles: clean, scannable output ---- */
+    @media print {
+      body { background: #fff; color: #000; }
+      .stars, .toolbar, header.hero .badge { display: none !important; }
+      .wrap { max-width: 100%; padding: 0; }
+      header.hero { padding: 10px 0 20px; }
+      header.hero h1 {
+        -webkit-text-fill-color: #000;
+        color: #000;
+        background: none;
+        font-size: 2rem;
+      }
+      header.hero p { color: #333; }
+      article.post {
+        background: #fff;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+        box-shadow: none;
+        backdrop-filter: none;
+        margin-bottom: 18px;
+      }
+      article.post h2 { color: #000; }
+      article.post h3 { color: #222; }
+      article.post p { color: #222; }
+      article.post strong { color: #000; }
+      article.post .meta { color: #555; }
+      article.post .fact { background: #f3f3f3; color: #000; border-left-color: #555; }
+      footer { color: #444; }
+      a { color: #000; text-decoration: underline; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header class="hero">
+      <span class="badge" id="siteBadge">Cosmic Chronicles</span>
+      <h1 id="siteTitle">Loading…</h1>
+      <p id="siteSubtitle"></p>
+    </header>
+
+    <div class="toolbar">
+      <a class="btn" href="cosmic-chronicles-part1.docx" download>Download Part 1</a>
+    </div>
+
+    <main id="content"></main>
+
+    <footer>
+      <p id="siteFooter"></p>
+    </footer>
+  </div>
+
+  <script>
+    // Escape any accidental HTML except the <strong> tags we intentionally allow.
+    function renderText(raw) {
+      // Split on <strong>...</strong> so we can keep bold while escaping the rest.
+      var parts = raw.split(/(<strong>.*?<\/strong>)/g);
+      return parts.map(function (part) {
+        var strongMatch = part.match(/^<strong>(.*?)<\/strong>$/);
+        if (strongMatch) {
+          return '<strong>' + escapeHtml(strongMatch[1]) + '</strong>';
+        }
+        return escapeHtml(part);
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // Build a single article element from a post object in the JSON.
+    function buildPost(post) {
+      var article = document.createElement('article');
+      article.className = 'post';
+      if (post.id) article.id = post.id;
+
+      var meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = post.meta || '';
+      article.appendChild(meta);
+
+      var h2 = document.createElement('h2');
+      h2.textContent = post.title || '';
+      article.appendChild(h2);
+
+      if (post.id === 'exoplanets') {
+        var part2Btn = document.createElement('div');
+        part2Btn.style.margin = '16px 0 24px';
+        part2Btn.innerHTML = '<button class="btn" onclick="JSBlobs.downloadDocmFile()">Download Part 2</button>';
+        article.appendChild(part2Btn);
+      }
+
+      (post.blocks || []).forEach(function (block) {
+        var el;
+        if (block.type === 'h3') {
+          el = document.createElement('h3');
+          el.textContent = block.text;
+        } else if (block.type === 'fact') {
+          el = document.createElement('div');
+          el.className = 'fact';
+          el.innerHTML = renderText(block.text);
+        } else {
+          // default: paragraph
+          el = document.createElement('p');
+          el.innerHTML = renderText(block.text);
+        }
+        article.appendChild(el);
+      });
+
+      return article;
+    }
+
+    function renderBlogData(data) {
+      var site = data.site || {};
+      if (site.badge) document.getElementById('siteBadge').textContent = site.badge;
+      document.getElementById('siteTitle').textContent = site.title || 'Space Blog';
+      document.getElementById('siteSubtitle').textContent = site.subtitle || '';
+      document.getElementById('siteFooter').textContent = site.footer || '';
+      if (site.title) document.title = site.title;
+
+      var content = document.getElementById('content');
+      content.innerHTML = '';
+      (data.posts || []).forEach(function (post) {
+        content.appendChild(buildPost(post));
+      });
+    }
+
+    function showError(message) {
+      document.getElementById('siteTitle').textContent = 'Could not load blog data';
+      var content = document.getElementById('content');
+      content.innerHTML = '';
+      var note = document.createElement('article');
+      note.className = 'post';
+      note.innerHTML =
+        '<h2>Blog data did not load</h2>' +
+        '<p>' + escapeHtml(message) + '</p>' +
+        '<p>If you opened this file directly from disk (a <strong>file://</strong> address), ' +
+        'browsers block loading <strong>blog-data.json</strong> for security reasons. ' +
+        'Serve the folder over HTTP instead — for example run ' +
+        '<strong>python -m http.server 8000</strong> in this folder and open ' +
+        '<strong>http://localhost:8000/index.html</strong>.</p>';
+      content.appendChild(note);
+    }
+
+    // Load the blog content from the external JSON file and render it.
+    function loadBlog() {
+      fetch('blog-data.json')
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          renderBlogData(data);
+        })
+        .catch(function (err) {
+          showError(err.message || String(err));
+        });
+    }
+
+    loadBlog();
+  </script>
+  <script src="js-blobs.js"></script>
+  <script src="browser-info.js"></script>
+</body>
+</html>
